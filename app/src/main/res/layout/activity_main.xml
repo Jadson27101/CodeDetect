@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#38AD56"
     tools:context="com.example.jadso.codedetect.MainActivity">
 
     <LinearLayout
@@ -24,16 +25,16 @@
             android:layout_width="match_parent"
             android:layout_height="318dp"
             android:layout_marginBottom="8dp"
+            android:background="#8BA63B"
             app:layout_constraintBottom_toTopOf="@+id/scannedMessage"
-            app:srcCompat="@color/cast_expanded_controller_background_color"
             tools:layout_editor_absoluteX="17dp" />
 
         <TextView
             android:id="@+id/scannedMessage"
             android:layout_width="match_parent"
             android:layout_height="51dp"
-            android:layout_marginEnd="8dp"
-            android:background="#A2909C"
+
+            android:background="#8BA63B"
             android:paddingLeft="10dp"
             android:text="Scanned message"
             app:layout_constraintEnd_toEndOf="parent"
@@ -44,9 +45,10 @@
             android:id="@+id/scan"
             android:layout_width="match_parent"
             android:layout_height="54dp"
-            android:layout_marginEnd="8dp"
             android:layout_marginTop="8dp"
+            android:layout_marginBottom="5dp"
             android:text="scan"
+            android:background = "@drawable/button_style"
             app:layout_constraintEnd_toStartOf="@+id/clear"
             app:layout_constraintTop_toBottomOf="@+id/scannedMessage" />
 
@@ -55,6 +57,7 @@
             android:layout_width="match_parent"
             android:layout_height="54dp"
             android:text="clear"
+            android:background = "@drawable/button_style"
             app:layout_constraintTop_toBottomOf="@+id/scannedMessage"
             tools:layout_editor_absoluteX="213dp" />
     </LinearLayout>
