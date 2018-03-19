@@ -27,8 +27,6 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO;
-
 public class MainActivity extends AppCompatActivity {
     TextView scannedMessageView;
     private static final int MEDIA_TYPE_IMAGE = 1;
@@ -54,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
         clear.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 scannedMessageView.setText("");
+                getIcon();
             }
 
         });
@@ -62,21 +61,6 @@ public class MainActivity extends AppCompatActivity {
         myimageView.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.icon));
     }
 
-    //    View.OnClickListener viewOnClickListener = new View.OnClickListener() {
-//        @Override
-//        public void onClick(View v) {
-//            switch (v.getId()){
-//                case R.id.scan:
-//                    //scanQR();
-//                    //isDeviceSupportCamera();
-//                    captureImage();
-//                    break;
-//                case R.id.clear:
-//                    scannedMessageView.setText("");
-//                    break;
-//            }
-//        }
-//    };
     private boolean isDeviceSupportCamera() {
         if (getApplicationContext().getPackageManager().hasSystemFeature(
                 PackageManager.FEATURE_CAMERA)) {
