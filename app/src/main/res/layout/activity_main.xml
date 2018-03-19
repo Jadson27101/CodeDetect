@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.jadso.codedetect.MainActivity">
+
+    <LinearLayout
+        android:layout_width="371dp"
+        android:layout_height="499dp"
+        android:layout_marginBottom="4dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/scannedImage"
+            android:layout_width="match_parent"
+            android:layout_height="318dp"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/scannedMessage"
+            app:srcCompat="@color/cast_expanded_controller_background_color"
+            tools:layout_editor_absoluteX="17dp" />
+
+        <TextView
+            android:id="@+id/scannedMessage"
+            android:layout_width="match_parent"
+            android:layout_height="51dp"
+            android:layout_marginEnd="8dp"
+            android:background="#A2909C"
+            android:paddingLeft="10dp"
+            android:text="Scanned message"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:ignore="MissingConstraints"
+            tools:layout_editor_absoluteY="369dp" />
+
+        <Button
+            android:id="@+id/scan"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="8dp"
+            android:text="scan"
+            app:layout_constraintEnd_toStartOf="@+id/clear"
+            app:layout_constraintTop_toBottomOf="@+id/scannedMessage" />
+
+        <Button
+            android:id="@+id/clear"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:text="clear"
+            app:layout_constraintTop_toBottomOf="@+id/scannedMessage"
+            tools:layout_editor_absoluteX="213dp" />
+    </LinearLayout>
+</android.support.constraint.ConstraintLayout>
