@@ -1,6 +1,7 @@
 package com.example.jadso.codedetect;
 
 import android.annotation.SuppressLint;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -9,6 +10,7 @@ import android.net.Uri;
 import android.os.Environment;
 import android.os.StrictMode;
 import android.provider.MediaStore;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -45,7 +47,11 @@ public class MainActivity extends AppCompatActivity {
         getIcon();
         scan.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                captureImage();
+                if (!isDeviceSupportCamera()) {
+                    Error1();
+                } else {
+                    captureImage();
+                }
             }
 
         });
@@ -104,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
                 return null;
             }
         }
-        // Create a media file name
+        // Create a image file name
         @SuppressLint("SimpleDateFormat") String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         File mediaFile;
         if (type == MEDIA_TYPE_IMAGE) {
@@ -164,4 +170,18 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
+    public void Error1(){
+        AlertDialog.Builder AlertDialog = new AlertDialog.Builder(this);
+        AlertDialog.setTitle("Error 1!").setMessage("Sorry. Your device can't support camera");
+        AlertDialog.setNegativeButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface AlertDialog, int i) {
+                AlertDialog.cancel();
+            }
+        });
+        AlertDialog alert = AlertDialog.create();
+        alert.show();
+    }
+
 }
