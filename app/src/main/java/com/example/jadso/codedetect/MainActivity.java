@@ -1,177 +1,154 @@
 package com.example.jadso.codedetect;
 
-import android.annotation.SuppressLint;
+import android.app.FragmentTransaction;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
-import android.os.Environment;
-import android.os.StrictMode;
-import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.util.SparseArray;
+import android.view.MenuItem;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.google.android.gms.vision.Frame;
+import com.google.android.gms.vision.CameraSource;
+import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
+import android.Manifest;
+import java.io.IOException;
 
-import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
-    TextView scannedMessageView;
-    private static final int MEDIA_TYPE_IMAGE = 1;
-    private Uri fileUri;
-    private ImageView myimageView;
-    private static final int CAMERA_CAPTURE_IMAGE_REQUEST_CODE = 100;
+    SurfaceView cameraPreview;
+    TextView txtResult;
+    BarcodeDetector barcodeDetector;
+    CameraSource cameraSource;
+    LinearLayout qrScanLayout, logoLayout;
+    final int RequestCameraPermissionID = 1001;
+    FragmentMain fragmentMain;
+    FragmentQrCreate fragmentQrCreate;
+    FragmentTransaction fragmentTransaction;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Button scan = (Button) findViewById(R.id.scan);
-        Button clear = (Button) findViewById(R.id.clear);
-        myimageView = (ImageView) findViewById(R.id.scannedImage);
-        scannedMessageView = (TextView) findViewById(R.id.scannedMessage);
-        getIcon();
-        scan.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                if (!isDeviceSupportCamera()) {
-                    Error1();
-                } else {
-                    captureImage();
-                }
-            }
-
-        });
-        clear.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                scannedMessageView.setText("");
-                getIcon();
-            }
-
-        });
-    }
-    private void getIcon(){
-        myimageView.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.icon));
-    }
-
-    private boolean isDeviceSupportCamera() {
-        if (getApplicationContext().getPackageManager().hasSystemFeature(
-                PackageManager.FEATURE_CAMERA)) {
-            scannedMessageView.setText("Found camera!!1");
-            // this device has a camera
-            return true;
-        } else {
-            // no camera on this device
-            return false;
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // if the result is capturing Image
-        if (requestCode == CAMERA_CAPTURE_IMAGE_REQUEST_CODE) {
-            if (resultCode == RESULT_OK) {
-                // successfully captured the image
-                // display it in image view
-                previewCapturedImage();
-            } else if (resultCode == RESULT_CANCELED) {
-                // user cancelled Image capture
-                Toast.makeText(getApplicationContext(),
-                        "User cancelled image capture", Toast.LENGTH_SHORT)
-                        .show();
-            } else {
-                // failed to capture image
-                Toast.makeText(getApplicationContext(),
-                        "Sorry! Failed to capture image", Toast.LENGTH_SHORT)
-                        .show();
-            }
-        }
-    }
-
-    private static File getOutputMediaFile(int type) {
-        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), "MyCameraApp");
-        if (!mediaStorageDir.exists()) {
-            if (!mediaStorageDir.mkdirs()) {
-                Log.d("MyCameraApp", "failed to create directory");
-                return null;
-            }
-        }
-        // Create a image file name
-        @SuppressLint("SimpleDateFormat") String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        File mediaFile;
-        if (type == MEDIA_TYPE_IMAGE) {
-            mediaFile = new File(mediaStorageDir.getPath() + File.separator +
-                    "IMG_" + timeStamp + ".jpg");
-        } else {
-            return null;
-        }
-
-        return mediaFile;
-    }
-
-    private static Uri getOutputMediaFileUri(int type) {
-        return Uri.fromFile(getOutputMediaFile(type));
-    }
-
-    private void captureImage() {
-        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
-        StrictMode.setVmPolicy(builder.build());
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        fileUri = getOutputMediaFileUri(MEDIA_TYPE_IMAGE);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
-        // start the image capture Intent
-        startActivityForResult(intent, CAMERA_CAPTURE_IMAGE_REQUEST_CODE);
-    }
-
-    private void previewCapturedImage() {
-        try {
-            myimageView.setVisibility(View.VISIBLE);
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inSampleSize = 8;
-            final Bitmap bitmap = BitmapFactory.decodeFile(fileUri.getPath(), options);
-            myimageView.setImageBitmap(bitmap);
-            scanQR(bitmap);
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-        }
-    }
-    private void scanQR(Bitmap bitmap) {
-        BarcodeDetector barcodeDetector = new BarcodeDetector.Builder(getApplicationContext())
-                .setBarcodeFormats(Barcode.ALL_FORMATS)
+        cameraPreview =(SurfaceView) findViewById(R.id.preview_camera);
+        qrScanLayout = (LinearLayout) findViewById(R.id.qrScanLayout);
+        txtResult = (TextView) findViewById(R.id.scannedMessage);
+        logoLayout = (LinearLayout) findViewById(R.id.logoLayout);
+        fragmentMain = new FragmentMain();
+        fragmentQrCreate = new FragmentQrCreate();
+        fragmentTransaction = getFragmentManager().beginTransaction();
+        qrScanLayout.setVisibility(View.GONE);
+        fragmentTransaction.add(R.id.frgmentContainer, fragmentMain);
+        fragmentTransaction.commit();
+        barcodeDetector = new BarcodeDetector.Builder(this)
+                .setBarcodeFormats(Barcode.QR_CODE)
                 .build();
-        if (!barcodeDetector.isOperational()) {
-            scannedMessageView.setText("Error! Please check your Internet connection!");
-        } else {
-            try {
-                Frame frame = new Frame.Builder().setBitmap(bitmap).build();
-                SparseArray<Barcode> barcodes = barcodeDetector.detect(frame);
-                if (barcodes.size()==0){
-                    scannedMessageView.setText("Error, QR not found!");
-                }else {
-                    Barcode thisCode = barcodes.valueAt(0);
-                    scannedMessageView.setText(thisCode.rawValue);
+        cameraSource = new CameraSource
+                .Builder(this, barcodeDetector)
+                .setRequestedPreviewSize(640, 480)
+                .build();
+        BottomNavigationView bottomNavigationView = (BottomNavigationView)
+                findViewById(R.id.bottom_navigation1);
+        bottomNavigationView.setOnNavigationItemSelectedListener(
+                new BottomNavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                        fragmentTransaction = getFragmentManager().beginTransaction();
+                        fragmentTransaction.remove(fragmentMain);
+                        switch (item.getItemId()) {
+                            case R.id.action_map:
+                                fragmentTransaction.remove(fragmentQrCreate);
+                                qrScanLayout.setVisibility(View.VISIBLE);
+                                scanQr();
+                                break;
+                            case R.id.action_dial:
+                                qrScanLayout.setVisibility(View.GONE);
+                                fragmentTransaction.replace(R.id.frgmentContainer,fragmentQrCreate);
+                                break;
+                            case R.id.action_mail:
+
+                                break;
+                        }
+                        fragmentTransaction.commit();
+                        return false;
+                    }
+                });
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case RequestCameraPermissionID: {
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                        return;
+                    }
+                    try {
+                        cameraSource.start(cameraPreview.getHolder());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
-                } catch (NullPointerException e) {
-                e.printStackTrace();
             }
+            break;
         }
     }
+    protected void scanQr(){
+        cameraPreview.getHolder().addCallback(new SurfaceHolder.Callback() {
+            @Override
+            public void surfaceCreated(SurfaceHolder surfaceHolder) {
+                if (ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                    //Request permission
+                    ActivityCompat.requestPermissions(MainActivity.this,
+                            new String[]{Manifest.permission.CAMERA},RequestCameraPermissionID);
+                    return;
+                }
+                try {
+                    cameraSource.start(cameraPreview.getHolder());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
 
-    public void Error1(){
+            @Override
+            public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
+                cameraSource.stop();
+
+            }
+        });
+        barcodeDetector.setProcessor(new Detector.Processor<Barcode>() {
+            @Override
+            public void release() {}
+
+            @Override
+            public void receiveDetections(Detector.Detections<Barcode> detections) {
+                final SparseArray<Barcode> qrcodes = detections.getDetectedItems();
+                if(qrcodes.size() != 0) {
+                    txtResult.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            txtResult.setText(qrcodes.valueAt(0).displayValue);
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    public void Error1() {
         AlertDialog.Builder AlertDialog = new AlertDialog.Builder(this);
         AlertDialog.setTitle("Error 1!").setMessage("Sorry. Your device can't support camera");
         AlertDialog.setNegativeButton("Ok", new DialogInterface.OnClickListener() {
@@ -183,5 +160,6 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog alert = AlertDialog.create();
         alert.show();
     }
+
 
 }

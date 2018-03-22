@@ -6,59 +6,58 @@
     android:layout_height="match_parent"
     android:background="#38AD56"
     tools:context="com.example.jadso.codedetect.MainActivity">
-
+    <!-- This DrawerLayout has two children at the root  -->
     <LinearLayout
-        android:layout_width="371dp"
-        android:layout_height="499dp"
-        android:layout_marginBottom="4dp"
-        android:layout_marginEnd="5dp"
+        android:id="@+id/qrScanLayout"
+        android:layout_width="387dp"
+        android:layout_height="556dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
 
-        <ImageView
-            android:id="@+id/scannedImage"
+
+        <SurfaceView
+            android:id="@+id/preview_camera"
             android:layout_width="match_parent"
-            android:layout_height="318dp"
-            android:layout_marginBottom="8dp"
-            android:background="#8BA63B"
-            app:layout_constraintBottom_toTopOf="@+id/scannedMessage"
-            tools:layout_editor_absoluteX="17dp" />
+            android:layout_height="471dp" />
 
         <TextView
             android:id="@+id/scannedMessage"
             android:layout_width="match_parent"
-            android:layout_height="51dp"
-
-            android:background="#8BA63B"
-            android:paddingLeft="10dp"
+            android:layout_height="106dp"
             android:text="Scanned message"
-            app:layout_constraintEnd_toEndOf="parent"
-            tools:ignore="MissingConstraints"
-            tools:layout_editor_absoluteY="369dp" />
+            android:layout_marginBottom="8dp"
+            android:background="#8BA63B" />
 
-        <Button
-            android:id="@+id/scan"
-            android:layout_width="match_parent"
-            android:layout_height="54dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="5dp"
-            android:text="scan"
-            android:background = "@drawable/button_style"
-            app:layout_constraintEnd_toStartOf="@+id/clear"
-            app:layout_constraintTop_toBottomOf="@+id/scannedMessage" />
-
-        <Button
-            android:id="@+id/clear"
-            android:layout_width="match_parent"
-            android:layout_height="54dp"
-            android:text="clear"
-            android:background = "@drawable/button_style"
-            app:layout_constraintTop_toBottomOf="@+id/scannedMessage"
-            tools:layout_editor_absoluteX="213dp" />
     </LinearLayout>
+    <FrameLayout
+        android:id="@+id/frgmentContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    </FrameLayout>
+
+    <android.support.design.widget.BottomNavigationView
+        android:id="@+id/bottom_navigation1"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_alignParentBottom="true"
+        app:itemBackground="@color/colorPrimary"
+        app:itemIconTint="@color/navigation_color"
+        app:itemTextColor="@color/navigation_color"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0"
+        app:menu="@menu/drawer_menu" />
+
+
 </android.support.constraint.ConstraintLayout>
